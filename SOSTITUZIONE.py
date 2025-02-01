@@ -18,28 +18,29 @@ def carica_orari(file_csv: str) -> Orari:
             professore = normalizza_nome(row[0])
             orari[professore] = {}
             
-            # Gestione ore normali (lunedì-venerdì)
-            for i, giorno in enumerate(giorni[:5]):  # Solo i primi 5 giorni
+            # Per ogni giorno (lunedì-venerdì)
+            for i, giorno in enumerate(giorni[:5]):
                 orari[professore][giorno] = {}
-                start_index = i * 6 + 1
-                end_index = start_index + 6
+                start_index = i * 6 + 1  # Inizio delle ore per questo giorno
+                end_index = start_index + 6  # Fine delle ore normali
+                
+                # Per Martedì, aggiungiamo 3 ore in più
+                if giorno == "Martedì":
+                    end_index = start_index + 9  # 6 ore normali + 3 ore pomeridiane
+                
                 for j, valore in enumerate(row[start_index:end_index], start=1):
-                    if j <= len(ore):
+                    if j <= 6:  # Ore normali
                         ora = f"{j}^ {ore[j-1]}"
-                        orari[professore][giorno][ora] = valore
-            
-            # Gestione ore pomeridiane del martedì
-            if "Martedì" in orari[professore]:
-                pomeriggio_start = 31  # Indice dopo le ore normali (5 giorni * 6 ore + 1)
-                for j, valore in enumerate(row[pomeriggio_start:pomeriggio_start+3], start=7):
-                    if j == 7:
-                        ora = f"{j}^ {j+7}:30"
-                    elif j == 8:
-                        ora = f"{j}^ {j+7}:20"
-                    elif j == 9:
-                        ora = f"{j}^ {j+7}:10"
+                    else:  # Ore pomeridiane per Martedì
+                        if j == 7:
+                            ora = f"{j}^ 15:30"
+                        elif j == 8:
+                            ora = f"{j}^ 16:20"
+                        elif j == 9:
+                            ora = f"{j}^ 17:10"
+                    
                     if valore.strip():  # Aggiungi solo se c'è un valore
-                        orari[professore]["Martedì"][ora] = valore
+                        orari[professore][giorno][ora] = valore
 
     return orari
 
