@@ -160,6 +160,9 @@ def trova_classi_e_sostituti(orari: Orari, professore_assente: str, giorno: str,
     risultato = {}
     professore_assente_normalizzato = normalizza_nome(professore_assente)
     
+    if giorno not in orari[professore_assente_normalizzato]:
+        return risultato 
+    
     for ora in orari[professore_assente_normalizzato][giorno]:
         classe = orari[professore_assente_normalizzato][giorno][ora]
         if classe and classe != '(D)':
